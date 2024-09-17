@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yearbook</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 50px;
+            background-color: #f8f9fa;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .student-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            background-color: #fff;
+        }
+        .student-card img {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
+        .student-info {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Yearbook</h1>
+        <p>Add class sections and students</p>
+    </div>
+
+    <!-- Form to Add Class Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4>Add Class Section</h4>
+            <form id="classForm">
+                <div class="mb-3">
+                    <label for="className" class="form-label">Class Name</label>
+                    <input type="text" class="form-control" id="className" placeholder="Enter class name" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Class Section</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Form to Add Student -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4>Add Student</h4>
+            <form id="studentForm">
+                <div class="mb-3">
+                    <label for="selectClass" class="form-label">Select Class</label>
+                    <select class="form-select" id="selectClass" required>
+                        <!-- Dynamically populated with class names -->
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="studentName" class="form-label">Student Name</label>
+                    <input type="text" class="form-control" id="studentName" placeholder="Enter student name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="studentPhoto" class="form-label">Photo URL</label>
+                    <input type="text" class="form-control" id="studentPhoto" placeholder="Enter photo URL" required>
+                </div>
+                <div class="mb-3">
+                    <label for="studentAchievement" class="form-label">Achievements</label>
+                    <textarea class="form-control" id="studentAchievement" rows="3" placeholder="Enter student achievements" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="studentQuote" class="form-label">Favorite Quote</label>
+                    <textarea class="form-control" id="studentQuote" rows="2" placeholder="Enter student quote" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Student</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Class Sections and Students Display -->
+    <div id="classSections" class="row">
+        <!-- JavaScript will insert class sections here -->
+    </div>
+</div>
+
+<!-- Bootstrap JS and Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const classSections = {}; // Store class sections and students
+
+    // Handle class form submission
+    document.getElementById('classForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const className = document.getElementById('className').value;
+
+        if (!classSections[className]) {
+            classSections[className] = [];
+            addClassToSelect(className);
+            displayClassSection(className);
+        }
+        document.getElementById('classForm').reset();
+    });
+
+    // Add class to dropdown
+    function addClassToSelect(className) {
+        const selectClass = document.getElementById('selectClass');
+        const option = document.createElement('option');
+        option.value = className;
+        option.textContent = className;
+        selectClass.appendChild(option);
+    }
+
+    // Display class section on page
+    function displayClassSection(className) {
+        const classContainer = document.createElement('div');
+        classContainer.className = 'col-md-6 class-section mb-4';
+        classContainer.id = `section-${className}`;
+
+        const classTitle = document.createElement('h3');
+        classTitle.textContent = className;
+
+        const studentsContainer = document.createElement('div');
+        studentsContainer.className = 'students-container';
+
+        classContainer.appendChild(classTitle);
+        classContainer.appendChild(studentsContainer);
+
+        document.getElementById('classSections').appendChild(classContainer);
+    }
+
+    // Handle student form submission
+    document.getElementById('studentForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const className = document.getElementById('selectClass').value;
+        const studentName = document.getElementById('studentName').value;
+        const studentPhoto = document.getElementById('studentPhoto').value;
+        const studentAchievement = document.getElementById('studentAchievement').value;
+        const studentQuote = document.getElementById('studentQuote').value;
+
+        const studentData = {
+            name: studentName,
+            photo: studentPhoto,
+            achievement: studentAchievement,
+            quote: studentQuote
+        };
+
+        if (classSections[className]) {
+            classSections[className].push(studentData);
+            displayStudent(className, studentData);
+        }
+
+        document.getElementById('studentForm').reset();
+    });
+
+    // Display student in class section
+    function displayStudent(className, studentData) {
+        const section = document.querySelector(`#section-${className} .students-container`);
+        const studentCard = document.createElement('div');
+        studentCard.className = 'student-card';
+
+        studentCard.innerHTML = `
+            <img src="${studentData.photo}" alt="${studentData.name}">
+            <div class="student-info">
+                <h5>${studentData.name}</h5>
+                <p><strong>Achievements:</strong> ${studentData.achievement}</p>
+                <p><strong>Quote:</strong> "${studentData.quote}"</p>
+            </div>
+        `;
+        section.appendChild(studentCard);
+    }
+</script>
+
+</body>
+</html>
